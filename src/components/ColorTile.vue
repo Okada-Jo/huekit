@@ -11,27 +11,16 @@ const emit = defineEmits(['copy', 'toggle-lock'])
 const marks = ['✳', '◒', '✦', '○', '✳']
 const colorName = computed(() => nameColor(props.hex))
 const foreground = computed(() => textColorFor(props.hex))
-
-function keyboardCopy(event) {
-  if (event.target !== event.currentTarget) return
-  event.preventDefault()
-  emit('copy', props.hex)
-}
 </script>
 
 <template>
-  <div
-    class="color-tile"
-    role="button"
-    tabindex="0"
-    :aria-label="`Copy ${hex}, ${colorName}`"
-    @click="emit('copy', hex)"
-    @keydown.enter="keyboardCopy"
-    @keydown.space="keyboardCopy"
-  >
+  <div class="color-tile">
     <div class="swatch" :style="{ background: hex, color: foreground }">
-      <span class="swatch-top">0{{ index + 1 }} / 05</span>
-      <span class="swatch-mark" aria-hidden="true">{{ marks[index] }}</span>
+      <button class="swatch-copy" type="button" :aria-label="`Copy ${hex}, ${colorName}`" @click="emit('copy', hex)">
+        <span class="swatch-top" aria-hidden="true">0{{ index + 1 }} / 05</span>
+        <span class="swatch-mark" aria-hidden="true">{{ marks[index] }}</span>
+        <span class="swatch-bottom" aria-hidden="true"><span>{{ locked ? 'LOCKED' : 'TAP TO COPY' }}</span><span class="swatch-copy-icon">↗</span></span>
+      </button>
       <button
         class="lock-button"
         type="button"
@@ -44,7 +33,6 @@ function keyboardCopy(event) {
           <path :d="locked ? 'M8 10V7a4 4 0 0 1 8 0v3' : 'M8 10V7a4 4 0 0 1 8 0'" />
         </svg>
       </button>
-      <span class="swatch-bottom"><span>{{ locked ? 'LOCKED' : 'TAP TO COPY' }}</span><span class="swatch-copy-icon" aria-hidden="true">↗</span></span>
     </div>
     <div class="tile-info">
       <div><span class="tile-hex">{{ hex }}</span><span class="tile-name">{{ colorName }}</span></div>

@@ -136,9 +136,6 @@ onUnmounted(() => {
         <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <span>huekit<span class="brand-dot">.</span></span>
       </a>
-      <div class="nav-right">
-        <a class="nav-link" href="#how-it-works">How it works <span aria-hidden="true">↗</span></a>
-      </div>
     </header>
 
     <main id="top">
@@ -209,7 +206,7 @@ onUnmounted(() => {
       </section>
     </main>
 
-    <footer class="site-footer" id="how-it-works">
+    <footer class="site-footer">
       <p>Generate, lock, copy, or save a palette.</p>
       <a href="#top">Back to top ↑</a>
     </footer>
