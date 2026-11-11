@@ -12,15 +12,24 @@ const saved = ref(readSaved())
 const toast = ref('')
 let toastTimeout
 
-const previewVariables = computed(() => Object.fromEntries(palette.value.map((hex, index) => [`--preview-${index + 1}`, hex])))
+const previewVariables = computed(() =>
+  Object.fromEntries(palette.value.map((hex, index) => [`--preview-${index + 1}`, hex])),
+)
 
 function readSaved() {
   try {
     const entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
     if (!Array.isArray(entries)) return []
-    return entries.filter(entry => entry && Array.isArray(entry.colors) && entry.colors.length === 5 && entry.colors.every(color => typeof color === 'string' && VALID_HEX.test(color)))
+    return entries
+      .filter(
+        (entry) =>
+          entry &&
+          Array.isArray(entry.colors) &&
+          entry.colors.length === 5 &&
+          entry.colors.every((color) => typeof color === 'string' && VALID_HEX.test(color)),
+      )
       .slice(0, 8)
-      .map(entry => ({ id: String(entry.id), colors: entry.colors, date: entry.date }))
+      .map((entry) => ({ id: String(entry.id), colors: entry.colors, date: entry.date }))
   } catch {
     return []
   }
@@ -39,7 +48,9 @@ function persist() {
 function notify(message) {
   toast.value = message
   clearTimeout(toastTimeout)
-  toastTimeout = setTimeout(() => { toast.value = '' }, 2200)
+  toastTimeout = setTimeout(() => {
+    toast.value = ''
+  }, 2200)
 }
 
 function generate() {
@@ -48,7 +59,7 @@ function generate() {
     return
   }
   const next = generatePalette()
-  palette.value = palette.value.map((hex, index) => locks.value[index] ? hex : next.colors[index])
+  palette.value = palette.value.map((hex, index) => (locks.value[index] ? hex : next.colors[index]))
 }
 
 function toggleLock(index) {
@@ -78,12 +89,18 @@ async function copyHex(hex) {
 }
 
 function savePalette() {
-  if (saved.value.some(entry => entry.colors.every((hex, index) => hex === palette.value[index]))) {
+  if (
+    saved.value.some((entry) => entry.colors.every((hex, index) => hex === palette.value[index]))
+  ) {
     notify('This palette is already saved.')
     return
   }
   saved.value = [
-    { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, colors: [...palette.value], date: new Date().toISOString() },
+    {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      colors: [...palette.value],
+      date: new Date().toISOString(),
+    },
     ...saved.value,
   ].slice(0, 8)
   if (persist()) notify('Added to your keepers ♡')
@@ -97,7 +114,7 @@ function loadPalette(entry) {
 }
 
 function removePalette(id) {
-  saved.value = saved.value.filter(entry => entry.id !== id)
+  saved.value = saved.value.filter((entry) => entry.id !== id)
   if (persist()) notify('Palette removed')
 }
 
@@ -116,8 +133,19 @@ function exportCss() {
 
 function onKeydown(event) {
   const target = event.target
-  if (event.code !== 'Space' || event.repeat || event.altKey || event.ctrlKey || event.metaKey || !(target instanceof Element)) return
-  if (target.closest('input, textarea, select, button, a, [role="button"], [contenteditable="true"]')) return
+  if (
+    event.code !== 'Space' ||
+    event.repeat ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey ||
+    !(target instanceof Element)
+  )
+    return
+  if (
+    target.closest('input, textarea, select, button, a, [role="button"], [contenteditable="true"]')
+  )
+    return
   event.preventDefault()
   generate()
 }
@@ -132,32 +160,63 @@ onUnmounted(() => {
 <template>
   <div class="site-shell">
     <header class="site-header">
-      <a class="brand" href="#top" aria-label="Huekit home">
-        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <a
+        class="brand"
+        href="#top"
+        aria-label="Huekit home"
+      >
+        <span
+          class="brand-mark"
+          aria-hidden="true"
+          ><i></i><i></i><i></i><i></i
+        ></span>
         <span>huekit<span class="brand-dot">.</span></span>
       </a>
     </header>
 
     <main id="top">
-      <section class="hero" aria-labelledby="hero-title">
+      <section
+        class="hero"
+        aria-labelledby="hero-title"
+      >
         <div class="hero-copy">
           <h1 id="hero-title">Color palettes</h1>
-          <p class="hero-description">Generate palettes, lock colors, and copy or export HEX values.</p>
+          <p class="hero-description">
+            Generate palettes, lock colors, and copy or export HEX values.
+          </p>
         </div>
       </section>
 
-      <section class="generator" aria-labelledby="generator-title">
+      <section
+        class="generator"
+        aria-labelledby="generator-title"
+      >
         <div class="section-toolbar">
           <div class="section-name">
             <h2 id="generator-title">Palette</h2>
           </div>
           <div class="toolbar-actions">
             <span class="keyboard-hint"><kbd>SPACE</kbd> to shuffle</span>
-            <button class="button button-outline" type="button" @click="savePalette"><span aria-hidden="true">♡</span> Save palette</button>
-            <button class="button button-dark" type="button" @click="generate"><span aria-hidden="true">↻</span> Generate new</button>
+            <button
+              class="button button-outline"
+              type="button"
+              @click="savePalette"
+            >
+              <span aria-hidden="true">♡</span> Save palette
+            </button>
+            <button
+              class="button button-dark"
+              type="button"
+              @click="generate"
+            >
+              <span aria-hidden="true">↻</span> Generate new
+            </button>
           </div>
         </div>
-        <div class="palette-grid" aria-label="Current color palette">
+        <div
+          class="palette-grid"
+          aria-label="Current color palette"
+        >
           <ColorTile
             v-for="(hex, index) in palette"
             :key="index"
@@ -170,38 +229,76 @@ onUnmounted(() => {
         </div>
       </section>
 
-      <section class="preview-section" aria-labelledby="preview-title">
+      <section
+        class="preview-section"
+        aria-labelledby="preview-title"
+      >
         <div class="section-toolbar section-toolbar-secondary">
           <div class="section-name">
             <h2 id="preview-title">Preview</h2>
           </div>
-          <button class="button button-outline export-button" type="button" @click="exportCss"><span aria-hidden="true">↧</span> Export CSS</button>
+          <button
+            class="button button-outline export-button"
+            type="button"
+            @click="exportCss"
+          >
+            <span aria-hidden="true">↧</span> Export CSS
+          </button>
         </div>
-        <div class="preview-card" :style="previewVariables">
+        <div
+          class="preview-card"
+          :style="previewVariables"
+        >
           <div class="preview-text">
             <h3>Palette preview</h3>
             <p>A sample layout using your current colors.</p>
           </div>
-          <div class="preview-art" aria-hidden="true">
-            <div class="art-frame art-frame-one"><span class="art-circle"></span><span class="art-line"></span><span class="art-small-circle"></span></div>
-            <div class="art-frame art-frame-two"><span class="art-sun"></span><span class="art-orbit"></span></div>
+          <div
+            class="preview-art"
+            aria-hidden="true"
+          >
+            <div class="art-frame art-frame-one">
+              <span class="art-circle"></span><span class="art-line"></span
+              ><span class="art-small-circle"></span>
+            </div>
+            <div class="art-frame art-frame-two">
+              <span class="art-sun"></span><span class="art-orbit"></span>
+            </div>
             <div class="art-spark">✳</div>
           </div>
         </div>
       </section>
 
-      <section class="saved-section" aria-labelledby="saved-title">
+      <section
+        class="saved-section"
+        aria-labelledby="saved-title"
+      >
         <div class="section-toolbar section-toolbar-secondary">
           <div class="section-name">
-            <h2 id="saved-title">Saved palettes <span class="saved-count">{{ saved.length }}</span></h2>
+            <h2 id="saved-title">
+              Saved palettes <span class="saved-count">{{ saved.length }}</span>
+            </h2>
           </div>
         </div>
-        <div class="saved-grid" aria-live="polite">
-          <div v-if="saved.length === 0" class="saved-empty">
+        <div
+          class="saved-grid"
+          aria-live="polite"
+        >
+          <div
+            v-if="saved.length === 0"
+            class="saved-empty"
+          >
             <strong>No saved palettes</strong>
             <p>Save a palette to keep it here.</p>
           </div>
-          <SavedPaletteCard v-for="(entry, index) in saved" :key="entry.id" :entry="entry" :index="index" @load="loadPalette" @remove="removePalette" />
+          <SavedPaletteCard
+            v-for="(entry, index) in saved"
+            :key="entry.id"
+            :entry="entry"
+            :index="index"
+            @load="loadPalette"
+            @remove="removePalette"
+          />
         </div>
       </section>
     </main>
@@ -211,5 +308,13 @@ onUnmounted(() => {
       <a href="#top">Back to top ↑</a>
     </footer>
   </div>
-  <div class="toast" :class="{ visible: toast }" role="status" aria-live="polite" aria-atomic="true">{{ toast }}</div>
+  <div
+    class="toast"
+    :class="{ visible: toast }"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    {{ toast }}
+  </div>
 </template>

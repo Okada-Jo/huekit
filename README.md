@@ -32,6 +32,15 @@ npm run build
 npm run preview
 ```
 
+## Lint and format
+
+```bash
+npm run lint
+npm run format
+```
+
+`npm run lint` checks JavaScript and Vue files with ESLint and CSS with Stylelint. `npm run format` formats the app source with Prettier; use `npm run format:check` to verify formatting without changing files.
+
 ## Project structure
 
 ```text
@@ -47,6 +56,9 @@ huekit-vue/
 ├── public/favicon.svg
 ├── .github/workflows/deploy.yml  # GitHub Pages deployment
 ├── index.html
+├── .eslintrc.cjs
+├── .prettierrc.json
+├── .stylelintrc.json
 ├── vite.config.js
 └── package.json
 ```
